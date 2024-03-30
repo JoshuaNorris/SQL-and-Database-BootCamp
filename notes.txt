@@ -1,0 +1,404 @@
+40 - Date difference and casting
+50 - Inner Join
+
+SQL Deep Dive
+
+SELECT * FROM "public"."titles"
+where emp_no = 10006;
+
+
+SELECT emp_no AS "Employee #", 
+birth_date AS "Birthday" 
+FROM "public"."employees";
+
+
+SELECT emp_no, 
+CONCAT(first_name, ' ', last_name) AS "Employee Name"
+from "public"."employees"
+
+Two kinds of functions
+	Aggregate - takes all the data and produces one value
+	Scalar - prduces data for each row
+
+Examples of Aggregate functions
+	AVG, COUNT, MIN, MAX, SUM
+
+SELECT MAX(salary)
+from "public"."salaries"
+
+
+-- This is a SQL Comment
+/*
+* This is a multi-line comment
+*/
+
+
+SELECT COUNT(customerid)
+from "public"."customers"
+WHERE (state = 'OR' OR state = 'NY') AND gender = 'F';
+
+SELECT count(customerid)
+from "public"."customers"
+WHERE not age = 55;
+
+--------------
+
+SELECT count(customerid)
+from "public"."customers"
+WHERE gender = 'F' and state = 'OR';
+
+SELECT count(customerid)
+from "public"."customers"
+WHERE age > 44 and income >= 100000;
+
+SELECT count(customerid)
+from "public"."customers"
+WHERE (age > 30 and age < 50) AND income < 50000;
+
+SELECT AVG(income)
+from "public"."customers"
+WHERE age > 20 and age < 50;
+
+Order of operations
+	from -> where -> select
+
+Operator precedence
+	Parentheses -> Mult / Div -> Sub / Add -> Not -> And -> Or
+
+
+---------------------------
+
+SELECT firstname, income, age 
+from customers
+WHERE income > 50000 AND (age < 30 OR age >= 50)
+and (country = 'Japan' OR country = 'Australia')
+
+SELECT SUM(totalamount)
+FROM public.orders
+WHERE EXTRACT(MONTH FROM orderdate) = 6
+  AND EXTRACT(YEAR FROM orderdate) = 2004
+  AND totalamount > 100;
+
+
+----------------------------
+
+SELECT Avg(coalesce(age, 15))
+from "Student";
+
+Select coalesce(name, 'The first name has not been given'),
+coalesce(lastName, 'The last name has not been given'), age
+from "Student"
+
+-----------------------------
+
+SELECT address1, coalesce(address2, 'No 2nd Address')
+FROM "public"."customers";
+
+SELECT *
+FROM "public"."customers"
+WHERE address2 IS NOT null;
+
+SELECT coalesce(lastName, 'Empty'), * 
+from "public"."customers"
+where age is null;
+
+-----------------------------
+
+SELECT firstname
+from "public"."customers"
+where (age between 30 and 50) and income < 50000
+
+SELECT avg(income)
+from "public"."customers"
+where age between 20 and 50
+
+-----------------------------
+
+
+SELECT count(customerid)
+from "public"."orders"
+where customerid in (7888, 1082, 12808, 9623)
+
+SELECT count(id)
+from "public"."city"
+where district in ('Zuid-Holland', 'Noord-Brabant', 'Utrecht')
+
+
+-----------------------------
+
+ILIKE is case insensitive
+
+SELECT first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age"
+FROM "public"."employees"
+where first_name LIKE 'M%';
+
+SELECT count(emp_no)
+FROM "public"."employees"
+where first_name LIKE 'A%r';
+
+SELECT count(customerid)
+from "public"."customers"
+where zip::text LIKE '%2%';
+
+SELECT count(customerid)
+from "public"."customers"
+where zip::text LIKE '2_1%';
+
+SELECT COALESCE(state, 'No state')
+from "public"."customers"
+where phone::text LIKE '302%';
+
+-----------------------------
+
+Dates are hard because of timezones
+
+UTC - Universal Coordinate Time (standard for time)
+
+
+SET TIME ZONE 'UTC'
+
+Postgres automatically stores time in utc
+
+ISO8601
+YYYY-MM-DDTHH:MM:SS
+
+
+CREAT TABLE timezones (
+	ts 	TIMESTAMP WITHOUT TIME ZONE,
+	ts 	TIMESTAMP WITH TIME ZONE,
+)
+
+SELECT NOW()::date;
+SELECT CURRENT_DATE;
+
+SELECT TO_CHAR( CURRENT_DATE, 'dd/mm/yyyy');
+
+DATE_TRUNC('year', date '1992/11/13'); -> 1992
+
+SELECT emp_no, first_name, last_name,
+EXTRACT(YEAR FROM AGE(CURRENT_TIMESTAMP, birth_date)) AS age
+FROM "public"."employees"
+WHERE EXTRACT(YEAR FROM AGE(birth_date)) > 60;
+
+
+SELECT Count(emp_no)
+FROM "public"."employees"
+WHERE EXTRACT(MONTH FROM AGE(hire_date)) = '2';
+
+SELECT Count(emp_no)
+FROM "public"."employees"
+WHERE EXTRACT(MONTH FROM AGE(birth_date)) = '11';
+
+SELECT Max(EXTRACT(YEAR FROM AGE(birth_date)))
+FROM "public"."employees"
+
+SELECT COUNT(orderid)
+from "public"."orders"
+where EXTRACT(month FROM orderdate) = '1' and EXTRACT(year FROM orderdate) = '2004';
+
+-----------------------------
+
+if you use the following syntax -> DISTINCT salary, from_date
+
+this will return all of the columns with a  distinct pairing of those two things
+
+SELECT distinct title
+FROM "public"."titles"
+
+SELECT DISTINCT lifeexpectancy
+from "public"."country"
+where lifeexpectancy is not null
+
+-----------------------------
+
+SELECT * FORM customers
+ORDEF BY name DESC
+
+SELECT * FORM customers
+ORDER BY name, lastName DESC
+
+ORDER BY naturally does ASC, in the query above the name is 
+ASC and lastName DESC
+
+SELECT * FORM customers
+ORDER BY LENGTH(name)
+
+SELECT first_name, last_name
+FROM "public"."employees"
+order by first_name asc, last_name desc
+
+SELECT first_name, last_name, EXTRACT(YEAR FROM AGE(birth_date)) as age
+FROM "public"."employees"
+order by EXTRACT(YEAR FROM AGE(birth_date))
+
+SELECT first_name, last_name, hire_date
+FROM "public"."employees"
+WHERE first_name like 'K%'
+order by hire_date;
+
+-----------------------------
+
+MULTI-TABLE SELECT
+
+
+SELECT a.emp_no,
+       CONCAT(a.first_name, a.last_name) as "name",
+       b.salary
+FROM "public"."employees" as a, "public"."salaries" as b
+WHERE a.emp_no = b.emp_no;
+
+Joins from a primary key to a foreign key is the most commen approach
+
+
+
+INNER JOIN
+
+these find the intersection of two datasets... where there is overlap
+
+SELECT a.emp_no, b.salary
+FROM employees as a, salaries as b
+WHERE a.emp_no = b.emp_no;
+
+SELECT a.emp_no, b.salary
+FROM employees as a
+INNER JOIN salaries as b on b.emp_no = a.emp_no;
+
+These two statements are the same ^^^
+
+the results of a join always come back unsorted so you always need to add an "order by"
+
+SELECT a.emp_no, b.salary
+FROM employees as a
+INNER JOIN salaries as b on b.emp_no = a.emp_no
+ORDER BY a.emp_no;
+
+
+SELECT a.emp_no,
+       CONCAT(a.first_name, ' ', a.last_name) as "name",
+       b.salary,
+       c.title,
+       c.from_date AS "promoted on"
+FROM "public"."employees" as a
+INNER JOIN "public"."salaries" AS b on a.emp_no = b.emp_no
+INNER JOIN "public"."titles" as c ON c.emp_no = a.emp_no 
+    AND c.from_date = (b.from_date + interval '2 days')
+order by a.emp_no;
+
+
+SELECT a.emp_no,
+       CONCAT(a.first_name, ' ', a.last_name) as "name",
+       b.salary,
+       c.title,
+       c.from_date AS "promoted on"
+FROM "public"."employees" as a
+INNER JOIN "public"."salaries" AS b on a.emp_no = b.emp_no
+INNER JOIN "public"."titles" as c ON c.emp_no = a.emp_no 
+    AND (
+    b.from_date = c.from_date
+    OR c.from_date = (b.from_date + interval '2 days')
+    )
+order by a.emp_no;
+
+
+-----------------------------
+
+SELF JOIN
+
+This happens when a table has a foreign key that references its primary key
+
+
+SELECT a.id, b.name,
+FROM employees as a
+INNER JOIN employees AS b 
+ON a.supervisorid = b.id
+order by a.emp_no;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Databases + SQL Fundamentals
+
+SELECT id, firstName
+FROM Student;
+
+SELECT *
+FROM Student;
+
+
+Declarative Language is about what will happen
+Imperative Language says how it will happen
+
+Heirarchical Database Model
+	data is organized in a tree
+	this has one-to-many relationship
+		this means each parent can have many children,but only one porent
+
+network model
+	each child can have multiple parents
+	many-to-many relationshups
+
+Relational Model
+	using tables instead of parent/child
+
+
+Codd's 12 rules af Relational Databaso
+
+
+Tables
+	each table has a name
+	degree - is the collection of all the columns
+	tuple - is a row of data
+	cardinality - the collection of rows
+
+Primary and Foreign Keys
+	The primary key is teh unique identifier of that data in the table
+	the foreign key is a connection to a unique identifier in another table
+
+OLTP vs. OLAP
+	OLTP - day to day transaction processes
+	OLAP - taking the OLTP and doing analytical processing on that data
+
+
+
+
+
+
+
+
+
+History and Story of data
+
+	5 types of databases
+		Relational Model Database
+		Document Model Database
+		Key Value Database
+		Graph Model Database
+		Wide Columnar Model Database
+

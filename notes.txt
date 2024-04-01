@@ -1,5 +1,126 @@
-40 - Date difference and casting
-50 - Inner Join
+
+
+
+ADVANCED SQL
+
+-----------------------------
+
+SELECT dept_no, COUNT(emp_no)
+FROM dept_emp
+GROUP BY dep_no;
+
+group by has very specific syntax
+
+every column not in tho group-by clause must apply a funcction
+
+group by utilizes a split-combine-strategy
+
+you take a gorup of data, split it, apply a function, combine the resluts
+
+Updated order of operations
+
+from --> where --> group by --> select --> order by
+
+All fields not in the aggregate function have to be in the groupby clause
+
+-----------------------------
+
+the HAVING clause is how you filter against groups
+
+updated order of operations
+FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER
+
+-----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 SQL Deep Dive
 
@@ -340,7 +461,14 @@ FULL OUTER JOIN
 	returns all results from both sets regardless on if they match or not
 
 	
+-----------------------------
 
+
+SELECT e.emp_no, e.first_name, de.dept_no
+FROM employees AS e
+INNER JOIN dept_emp AS de USING(emp_no)
+
+this works for the standard case of simple joins oof just a pribary key -> foreign key relationship
 
 
 

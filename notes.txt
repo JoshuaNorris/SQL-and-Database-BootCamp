@@ -313,6 +313,57 @@ INNER JOIN employees AS b
 ON a.supervisorid = b.id
 order by a.emp_no;
 
+-----------------------------
+
+OUTER JOIN
+
+What if I want the values from one of the tables that doesn't match?
+
+
+SELECT emp.emp_no
+FROM employees AS emp
+LEFT JOIN dept_manager AS dep ON emp.emp_no = dep.emp_no
+WHERE dep.emp_no IS NULL
+
+
+-----------------------------
+
+LESS COMMON JOINS
+
+CROSS JOIN
+	creates a combination of every row with every other row
+
+	SELECT * FROM "cartesianA"
+	CROSS JOIN "cartesianB"
+
+FULL OUTER JOIN
+	returns all results from both sets regardless on if they match or not
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

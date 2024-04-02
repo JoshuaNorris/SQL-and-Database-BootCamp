@@ -142,12 +142,27 @@ This has the same output as the partition query
 
 FIRST_VALUE
 
+-----------------------------
 
+CONDITIONALS
 
+SELECT a,
+	CASE WHEN a=1 THEN 'one'
+	     WHEN a=2 THEN 'two'
+	     ELSE 'other'
+	END
+from test;
 
+each case wust return a single outcome
 
+-----------------------------
 
+NULL IF
 
+NULLIF(0,0) -> NULL
+NULLIF('ABC, DEF') -> ABC
+
+if the left and right hand side rae equal it returns null
 
 
 

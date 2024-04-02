@@ -1,5 +1,6 @@
 10 - Looking through the windom
 20 - Conditional Statement
+30 - Index Algorithm
 
 
 ADVANCED SQL

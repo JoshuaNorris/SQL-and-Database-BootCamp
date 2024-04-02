@@ -54,8 +54,15 @@ FROM country;
 *  Table: Regions (Join + Window function)
 */
 
-SELECT *
-FROM regions AS r;
+SELECT DISTINCT r.name,
+       count(t.code) over (
+            partition by r.code
+       )
+FROM regions AS r
+INNER JOIN departments as d
+    on d.region = r.code
+Inner join towns as t
+    on t.department = d.code
 
 
 

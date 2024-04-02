@@ -1,4 +1,5 @@
-
+10 - Looking through the windom
+20 - Conditional Statement
 
 
 ADVANCED SQL
@@ -32,14 +33,113 @@ FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER
 
 -----------------------------
 
+Select col1, SUM(col2)
+from table
+GROUP BY col1
+
+UNION
+
+SOLECT SUM(col2)
+from table
+
+
+UNION ALL is another command, this command won't remove duplicate records
+
+SELECT NULL AS "prod_id", sum(ol.quantity)
+FROM orderlines AS ol
+
+
+grouping sets allows you to combine the outputs of multiple groupings
+
+SELECT prod_id, sum(ol.quantity)
+FROM orderlines as ol
+GROUP BY
+	GROUPING SETS (
+	(),
+	(prod_id)
+	)
+ORDER BY prod_id DESC;
+
+-----------------------------
+
+ROLLUP
+
+Rollup creates grouping sets by all combinations of the fields it gets
+
+-----------------------------
+
+WINDOW FUNCTIONS
+
+What if I want to show something by my row based on a group calculation
+
+Window Functions create a new column based on Fnuctions performed on a subset or "window" of the data
+
+window_function(arg1, arg2, ...) OVER (
+	[PARTITION BY partition_expression]
+	[ORDER BY sort_expression [ASC | DESC] NULLS {FIRST | LAST}]
+)
+
+
+partition by is used to apply the function against groups
+
+when order by is used in tho window function it gives the progression
+
+Framing
+
+rows or range - range of rows as a frome
+preceding rews before the current one
+following rows after the current one
+unbounded preceding or following - returns all before or after
+current row
+
+ORDER BY in over is changing the frame of the calculation
 
 
 
+SELECT emp_no,
+       salary,
+       COUNT (salary) OVER (
+            ORDER BY emp_no
+       )
+FROM "public"."salaries"
+
+This is i cummulative sum
+(starts with 17 then 23 then 30 then 43)
+
+SELECT emp_no,
+       salary,
+       COUNT (salary) OVER (
+            partition BY emp_no
+       )
+FROM "public"."salaries"
+
+This finds the count for eoch emp_no
+(17, 6, 7)
 
 
+SELECT emp_no,
+       salary,
+       COUNT (salary) OVER (
+            partition BY emp_no
+            ORDER BY salary
+       )
+FROM "public"."salaries"
+
+This creates a cummulative sum inside of each partition
 
 
+SELECT emp_no,
+       salary,
+       COUNT (salary) OVER (
+            partition BY emp_no
+            ORDER BY salary
+            RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+       )
+FROM "public"."salaries"
 
+This has the same output as the partition query
+
+FIRST_VALUE
 
 
 

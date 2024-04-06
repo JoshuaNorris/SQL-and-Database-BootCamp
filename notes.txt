@@ -164,11 +164,40 @@ NULLIF('ABC, DEF') -> ABC
 
 if the left and right hand side rae equal it returns null
 
+-----------------------------
 
+VIEWS
 
+What if we want to store the the results of a query?
+Or what if we want to query the results of a query?
 
+2 kinds of views
+	Materialized
+		Stores the data physically and periodically updates it when tables change
+	Non-Materialized
+		Quary gets re-run each time the view is called
+		So we are storing a reference to the query
 
+CREATE VIEW view_name AS 
+SELECT *
+FROM employees
 
+Non materialied views take up very little space
+
+CREATE OR REPLACE VIEW last_salary_change AS
+SELECT  e.emp_no,
+        MAX(s.from_date)
+        
+FROM salaries as s
+
+join employees as e using(emp_no)
+join dept_emp as de using(emp_no)
+join departments as d using(dept_no)
+
+group by e.emp_no
+order by e.emp_no;
+
+SELECT * FROM last_salary_change
 
 
 

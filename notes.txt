@@ -199,17 +199,170 @@ order by e.emp_no;
 
 SELECT * FROM last_salary_change
 
+-----------------------------
+
+INDEXES
+
+An index is a construct to improve querying performance
+Or a pointer to data in a table
+	almost like a toble of contents
+
+Indexes speed up lookups, but slow down data insertion and updates
+
+Types of Indexes
+	Single-Column
+	Multi-Column
+	Unique - There can be no two of the same values in that index
+	Partial
+	Implicit Indexes
+
+CREATE <type> INDEX <name>
+on <table> (col1, col2, etc);
+
+DROP INDEX <name>
+
+When to index
+	foreign keys
+	primary keys and unique columns
+	on columns that end up in the order by/where clause often
+
+When not to index
+	don't add an index to add an index
+	don't use indexes on small tables
+	don't use on tables that are updated frequently
+	don't use an columns that con contain null values
+	don't use on calumns that have large values
+
+Single Columns indexes
+	used on the most frequently used coulumn in a query
+	this is helpful when you are trying to retrieve data that satisfies one condition
+
+Multi-Columns indexes
+	used on the most frequently used columns in a query
+	this is helpful when you are trying to retrieve data that satisfies multiple conditions
+
+Unique indexes
+	this is used for speed and integrity
+
+partiol indexes
+	these are over a sebset of a table
+
+implicit indexes
+	these are automatically created on databases on
+		primary and unique keys
 
 
 
+explain analyze
+SELECT "name", district, countrycode from city
+where countrycode in ('TUN', 'BE', 'NL')
 
 
+CREATE INDEX idx_countrycode
+ON city (countrycode)
+
+Index Algorithms
+
+Postgress' algorithms
+	Btree
+		This is the default... it is best when used with camparisons (<, >, in, is null, etc.)
+	Hash
+		This can only handle equality checks
+	Gin (Generalized Inverted Index)
+		Best used when multiple values are stored in a single field
+			For instance array types
+	Gist (Generalized Search Tree)
+		Useful in indexing Geometric data and Full-Text Search
 
 
+CREATE <type> INDEX <name>
+on <table> USING <method> (col1, col2, etc);
 
 
+-----------------------------
+
+SUBQUERIES (Inner Query or Inner Select)
+
+This is most often found in the WHERE clause
+
+SELECT *
+FROM <table>
+WHERE <col> <condition> (
+	SELECT <col>, <col>, ...
+	FROM <table>
+	[WHERE | GROUP BY | ORDER BY...]
+)
+
+You can also use it in the SELECT, FROM, AND HAVING
+
+SELECT (
+	SELECT <col>, <col>, ...
+	FROM <table>
+	[WHERE | GROUP BY | ORDER BY...]
+) -- This must return a single record
+FROM <table>
+WHERE <col> <condition> 
+
+SELECT *
+FROM (
+	SELECT <col>, <col>, ...
+	FROM <table>
+	[WHERE | GROUP BY | ORDER BY...]
+) as <name>
+WHERE <col> <condition>
 
 
+SELECT *
+FROM <table AS <name>
+GROUP BY <col>
+HAVING (
+	SELECT <col>, <col>, ...
+	FROM <table>
+	[WHERE | GROUP BY | ORDER BY...]
+) > X
+This also must return a single record
+
+Subqueries vs. Join
+
+Subqueries could stand alone 
+
+Subqueries can return a single row or a row set, joins only do row set
+
+subqueries results are immediotely used
+
+Joins are able to be referenced at other parts of the query
+
+If you can use a join, then you should use a join because they are more performant
+
+A subquery must be used in parentheses
+
+They must be placed on the right side of the comparison operator
+
+A subquery cannot manipulate their results internally (order by is ignored)
+
+Use Single-row Operators with single-row subqueries
+
+Subqueries that return null may not return results
+
+Types of Subqueries
+	Single Row
+		returns 0 or one row
+	Multiple Row
+		tends to use "IN"
+	Multiple Column
+		THis can be used to join on
+	Correlated
+		References one or more columns in tho outer statement
+		these can be very slow
+	nested
+
+Subquery Operators
+
+	WHERE EXISTS
+
+	WHERE IN
+
+	where category = any
 
 
 
